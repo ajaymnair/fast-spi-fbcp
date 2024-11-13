@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
+project(FastSpiFBCP)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
@@ -33,8 +34,8 @@ if (BOARD_REVISION MATCHES "(0002)|(0003)|(0004)|(0005)|(0006)|(0007)|(0008)|(00
 elseif(BOARD_REVISION MATCHES "(a01041)|(a21041)")
 	message(STATUS "Detected this board to be a Pi 2 Model B < rev 1.2 with ARMv7-A instruction set CPU.")
 	set(DEFAULT_TO_ARMV7A ON)
-elseif(BOARD_REVISION MATCHES "(a02082)|(a22082)|(a020d3)|(9020e0)|(a03111)|(b03111)|(b03140)|(c03111)" OR BOARD_REVISION MATCHES "(c03130)|(d03114)")
-	message(STATUS "Detected this Pi to be one of: Pi 2B rev. 1.2, 3B, 3B+, 3A+, CM3, CM3 lite, CM4, 4B(1GB,2GB,4GB,8GB RAM) or Pi400, with 4 hardware cores and ARMv8-A instruction set CPU.")
+elseif(BOARD_REVISION MATCHES "(a02082)|(a22082)|(a020d3)|(9020e0)|(a03111)|(b03111)|(b03140)|(c03111)|(902120)" OR BOARD_REVISION MATCHES "(c03130)|(d03114)")
+	message(STATUS "Detected this Pi to be one of: Pi 2B rev. 1.2, 3B, 3B+, 3A+, CM3, CM3 lite, CM4, 4B(1GB,2GB,4GB,8GB RAM), Zero, Zero 2 or Pi400, with 4 hardware cores and ARMv8-A instruction set CPU.")
 	set(DEFAULT_TO_ARMV8A ON)
 else()
 	message(WARNING "The board revision of this hardware is not known. Please add detection to this board in CMakeLists.txt. (proceeding to compile against a generic multicore CPU)")
@@ -46,7 +47,9 @@ if (SINGLE_CORE_BOARD)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSINGLE_CORE_BOARD=1")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -marm -mabi=aapcs-linux -mhard-float -mfloat-abi=hard -mlittle-endian -mtls-dialect=gnu2 -funsafe-math-optimizations")
+# removed many optimizations for 64 bit compatibility -> -mtls-dialect=gnu2 -marm -mabi=aapcs-linux -mhard-float -mfloat-abi=hard
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mlittle-endian -funsafe-math-optimizations")
+
 
 option(ARMV6Z "Target a Raspberry Pi with ARMv6Z instruction set (Pi 1A, 1A+, 1B, 1B+, Zero, Zero W)" ${DEFAULT_TO_ARMV6Z})
 if (ARMV6Z)
